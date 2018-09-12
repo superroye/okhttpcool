@@ -1,0 +1,2 @@
+# okhttpcool
+基于OKhttp+Rxjava2+Retrofit进行二次封装，优雅的okhttpclient+retrofit初始化设置，完整的拦截器配置，基于OKhttp缓存，封装无网络和其他所有场景的缓存策略支持
