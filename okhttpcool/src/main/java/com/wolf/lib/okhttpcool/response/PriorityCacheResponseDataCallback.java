@@ -1,6 +1,6 @@
 package com.wolf.lib.okhttpcool.response;
 
-import com.wolf.lib.okhttpcool.cache.SceneCacheStrategy;
+import com.wolf.lib.okhttpcool.cache.CacheStrategyUtil;
 import com.wolf.lib.okhttpcool.listener.IProgressDialog;
 import com.wolf.lib.okhttpcool.util.NetworkUtils;
 import com.wolf.lib.okhttpcool.util.ToastUtils;
@@ -51,7 +51,7 @@ public abstract class PriorityCacheResponseDataCallback<T> implements Callback<H
                 procedure.handleResponse(response.body());
                 onFinish();
             } else {
-                SceneCacheStrategy.checkSame(lastCacheResopnse, networkResopnse, new Consumer<String>() {
+                CacheStrategyUtil.checkSame(lastCacheResopnse, networkResopnse, new Consumer<String>() {
                     @Override
                     public void accept(String s) throws Exception {
                         if ("n".equals(s)) {

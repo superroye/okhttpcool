@@ -34,7 +34,7 @@ public class CacheStrategyInterceptor implements Interceptor {
                     .build();
         }
 
-        Response tryCacheResponse = SceneCacheStrategy.doForCacheInterceptor(chain, oRequest);
+        Response tryCacheResponse = CacheStrategyUtil.doForCacheInterceptor(chain, oRequest);
         if (tryCacheResponse != null) {
             return tryCacheResponse;
         }

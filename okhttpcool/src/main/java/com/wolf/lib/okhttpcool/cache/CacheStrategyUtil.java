@@ -24,7 +24,7 @@ import okio.ByteString;
  * @author Roye
  * @date 2018/9/10
  */
-public class SceneCacheStrategy {
+public class CacheStrategyUtil {
 
     public static final String STRATEGY_KEY = "adrcache";
 
@@ -58,7 +58,7 @@ public class SceneCacheStrategy {
     }
 
     public static Request getCacheRequest(Request oRequest) {
-        return oRequest.newBuilder().header("Cache-Control", "max-age=640000").build();
+        return oRequest.newBuilder().header("Cache-Control", "max-age=86400").build();
     }
 
     public static Request getNoCacheRequest(Request oRequest) {
@@ -68,18 +68,18 @@ public class SceneCacheStrategy {
     static WeakReference<HashMap<String, Integer>> weakReference;
 
     public static Response doForCacheInterceptor(Interceptor.Chain chain, Request oRequest) throws IOException {
-        String adrcache = oRequest.header(SceneCacheStrategy.STRATEGY_KEY);
+        String adrcache = oRequest.header(CacheStrategyUtil.STRATEGY_KEY);
 
         if (TextUtils.isEmpty(adrcache)) {
             return null;
         }
 
         Request request = oRequest;
-        if (adrcache.equals(SceneCacheStrategy.Strategy.getcache.name())) {
-            request = SceneCacheStrategy.getCacheRequest(oRequest);
-        } else if (adrcache.equals(SceneCacheStrategy.Strategy.refresh.name())) {
-            request = SceneCacheStrategy.getNoCacheRequest(oRequest);
-        } else if (adrcache.equals(SceneCacheStrategy.Strategy.getandrefresh.name())) {
+        if (adrcache.equals(CacheStrategy.getcache.name())) {
+            request = CacheStrategyUtil.getCacheRequest(oRequest);
+        } else if (adrcache.equals(CacheStrategy.refresh.name())) {
+            request = CacheStrategyUtil.getNoCacheRequest(oRequest);
+        } else if (adrcache.equals(CacheStrategy.getandrefresh.name())) {
             if (weakReference == null || weakReference.get() == null) {
                 weakReference = new WeakReference<>(new HashMap<String, Integer>());
             }
@@ -91,10 +91,10 @@ public class SceneCacheStrategy {
             }
             String tmpKey = Cache.key(oRequest.url());
             if (!map.containsKey(tmpKey)) {//第一次
-                request = SceneCacheStrategy.getCacheRequest(oRequest);
+                request = CacheStrategyUtil.getCacheRequest(oRequest);
                 map.put(tmpKey, 1);
             } else {
-                request = SceneCacheStrategy.getNoCacheRequest(oRequest);
+                request = CacheStrategyUtil.getNoCacheRequest(oRequest);
                 map.remove(tmpKey);
             }
         }
@@ -102,13 +102,13 @@ public class SceneCacheStrategy {
     }
 
     public static Response doForNetworkInterceptor(Interceptor.Chain chain, Request oRequest) throws IOException {
-        String adrcache = oRequest.header(SceneCacheStrategy.STRATEGY_KEY);
+        String adrcache = oRequest.header(CacheStrategyUtil.STRATEGY_KEY);
 
         if (TextUtils.isEmpty(adrcache)) {
             return null;
         }
 
-        Request request = oRequest.newBuilder().removeHeader(SceneCacheStrategy.STRATEGY_KEY).build();
+        Request request = oRequest.newBuilder().removeHeader(CacheStrategyUtil.STRATEGY_KEY).build();
         Response originalResponse = chain.proceed(request);
         return originalResponse.newBuilder()
                 .removeHeader("Pragma")//清除响应体对Cache有影响的信息
@@ -117,12 +117,4 @@ public class SceneCacheStrategy {
                 .build();
     }
 
-    /**
-     * getcache，获取缓存，过期则请求网络
-     * refresh，请求网络并刷新缓存，可配合getcache使用
-     * getandrefresh，请求缓存，并请求网络，网络不一致则刷新UI
-     */
-    public enum Strategy {
-        getcache, refresh, getandrefresh
-    }
 }

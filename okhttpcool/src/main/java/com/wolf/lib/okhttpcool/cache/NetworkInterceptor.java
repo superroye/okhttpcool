@@ -13,7 +13,7 @@ import okhttp3.Response;
  * 1、修改response缓存设置，忽略服务端缓存控制
  * 2、无网络，直接请求缓存
  * 3、url缓存可设置, 以url+queryString哈希值为key，所以可以通过传递新querykey=timestamp来强刷新数据
- * 只读网络(Cache-Control: no-SceneCacheStrategy),
+ * 只读网络(Cache-Control: no-CacheStrategyUtil),
  * 无存储(Cache-Control: no-store),
  * 缓存时间(Cache-Control: max-age=640000)，没有超出maxAge,不管怎么样都是返回缓存数据，超过了maxAge,发起新的请求获取数据更新，请求失败返回缓存数据。
  * 只读缓存(Cache-Control:public, only-if-cached, max-stale=2419200),没有超过maxStale，不管怎么样都返回缓存数据，超过了maxStale,发起请求获取更新数据，请求失败返回失败
@@ -31,12 +31,12 @@ public class NetworkInterceptor implements Interceptor {
         Request request = oRequest;
 
         if (connected) {
-            Response tryCacheResponse = SceneCacheStrategy.doForNetworkInterceptor(chain, oRequest);
+            Response tryCacheResponse = CacheStrategyUtil.doForNetworkInterceptor(chain, oRequest);
             if (tryCacheResponse != null) {
                 return tryCacheResponse;
             } else {
                 if (cacheControl.noCache()) {
-                    //这里很关键，如果设置Response header也为no-SceneCacheStrategy, 就真的不缓存了，所以这里不做处理，默认会存缓存，等网络不可用时直接返回缓存
+                    //这里很关键，如果设置Response header也为no-CacheStrategyUtil, 就真的不缓存了，所以这里不做处理，默认会存缓存，等网络不可用时直接返回缓存
                     return chain.proceed(request);
                 } else {
                     Response originalResponse = chain.proceed(request);
