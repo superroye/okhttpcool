@@ -26,13 +26,13 @@ public abstract class ApiBuilder<T> {
 
     private Class<T> cls;
     private String baseUrl;
-    private GlobalRequestAdapter globalRequestAdapter;
 
     public ApiBuilder() {
         this.cls = (Class<T>) (((ParameterizedType) getClass()
                 .getGenericSuperclass()).getActualTypeArguments()[0]);
         httpClient = new ZHttpClient();
-
+        onBuild(httpClient);
+        httpClient.build();
     }
 
     public OkHttpClient getClient() {
@@ -44,15 +44,7 @@ public abstract class ApiBuilder<T> {
         return this;
     }
 
-    public ApiBuilder setGlobalRequestAdapter(GlobalRequestAdapter globalRequestAdapter) {
-        httpClient.setGlobalRequestAdapter(globalRequestAdapter);
-        return this;
-    }
-
-    public ApiBuilder setCall(String baseUrl) {
-        this.baseUrl = baseUrl;
-        return this;
-    }
+    public abstract void onBuild(ZHttpClient httpClient);
 
     public T build() {
         Scheduler observeOn = AndroidSchedulers.mainThread();

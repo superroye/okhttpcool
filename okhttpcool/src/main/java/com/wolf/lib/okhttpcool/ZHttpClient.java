@@ -42,6 +42,8 @@ public class ZHttpClient {
 
     private GlobalRequestAdapter globalRequestAdapter;
 
+    private OkHttpClient.Builder builder;
+
     public ZHttpClient() {
         init();
     }
@@ -58,9 +60,9 @@ public class ZHttpClient {
         int totalCacheSize = 64 * 1024 * 1024; // 64M
         Cache cache = new Cache(new File(LibContext.getApp().getCacheDir(), "okhttp"), totalCacheSize);
 
-        OkHttpClient.Builder builder = new OkHttpClient.Builder()
+        this.builder = new OkHttpClient.Builder()
                 .cache(cache)
-                .sslSocketFactory(createSSLSocketFactory(), new TrustAllManager())
+                //.sslSocketFactory(createSSLSocketFactory(), new TrustAllManager())
                 .hostnameVerifier(new TrustAllHostnameVerifier())
                 .connectTimeout(10, TimeUnit.SECONDS).readTimeout(10, TimeUnit.SECONDS)
                 .retryOnConnectionFailure(true);
@@ -101,7 +103,13 @@ public class ZHttpClient {
         interceptors.add(logging);
 
         builder.interceptors().addAll(interceptors);
+    }
 
+    public OkHttpClient.Builder builder() {
+        return builder;
+    }
+
+    public void build() {
         client = builder.build();
     }
 

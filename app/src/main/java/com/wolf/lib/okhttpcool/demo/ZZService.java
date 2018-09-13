@@ -1,6 +1,7 @@
 package com.wolf.lib.okhttpcool.demo;
 
 import com.wolf.lib.okhttpcool.ApiBuilder;
+import com.wolf.lib.okhttpcool.ZHttpClient;
 import com.wolf.lib.okhttpcool.support.GlobalRequestAdapter;
 
 import okhttp3.FormBody;
@@ -13,8 +14,8 @@ public class ZZService {
 
     public static ZZCAPi api() {
         if (zzcaPi == null) {
-            synchronized (ZZService.class){
-                if(zzcaPi == null){
+            synchronized (ZZService.class) {
+                if (zzcaPi == null) {
                     init();
                 }
             }
@@ -24,24 +25,31 @@ public class ZZService {
 
     private static void init() {
         ApiBuilder<ZZCAPi> apiBuilder = new ApiBuilder<ZZCAPi>() {
+
+            @Override
+            public void onBuild(ZHttpClient httpClient) {
+                httpClient.setGlobalRequestAdapter(new GlobalRequestAdapter() {
+                    @Override
+                    public void addHeader(Request.Builder builder) {
+                        //builder.addHeader("head1","value");
+                    }
+
+                    @Override
+                    public void addQueryParams(HttpUrl.Builder builder) {
+                        //builder.addEncodedQueryParameter("test","testName");
+                    }
+
+                    @Override
+                    public void addPostParams(FormBody.Builder builder) {
+                        //builder.add("testPost", "testPostValue");
+                    }
+                });
+
+                //httpClient.builder().cookieJar();
+            }
         };
-        apiBuilder.setGlobalRequestAdapter(new GlobalRequestAdapter() {
-            @Override
-            public void addHeader(Request.Builder builder) {
-                //builder.addHeader("head1","value");
-            }
-
-            @Override
-            public void addQueryParams(HttpUrl.Builder builder) {
-                //builder.addEncodedQueryParameter("test","testName");
-            }
-
-            @Override
-            public void addPostParams(FormBody.Builder builder) {
-                //builder.add("testPost", "testPostValue");
-            }
-        });
         apiBuilder.baseUrl("https://suggest.taobao.com/");
+
         zzcaPi = apiBuilder.build();
     }
 }
