@@ -1,7 +1,5 @@
 package com.wolf.lib.okhttpcool;
 
-import com.wolf.lib.okhttpcool.support.GlobalRequestAdapter;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -22,7 +20,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public abstract class ApiBuilder<T> {
 
-    protected ZHttpClient httpClient;
+    protected CoolHttpClient httpClient;
 
     private Class<T> cls;
     private String baseUrl;
@@ -30,7 +28,7 @@ public abstract class ApiBuilder<T> {
     public ApiBuilder() {
         this.cls = (Class<T>) (((ParameterizedType) getClass()
                 .getGenericSuperclass()).getActualTypeArguments()[0]);
-        httpClient = new ZHttpClient();
+        httpClient = new CoolHttpClient();
         onBuild(httpClient);
         httpClient.build();
     }
@@ -44,7 +42,7 @@ public abstract class ApiBuilder<T> {
         return this;
     }
 
-    public abstract void onBuild(ZHttpClient httpClient);
+    public abstract void onBuild(CoolHttpClient httpClient);
 
     public T build() {
         Scheduler observeOn = AndroidSchedulers.mainThread();
@@ -57,7 +55,6 @@ public abstract class ApiBuilder<T> {
                 .build();
 
         T api = retrofit.create(cls);
-
         return api;
     }
 

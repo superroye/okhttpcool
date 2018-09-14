@@ -2,17 +2,27 @@ package com.wolf.lib.okhttpcool.cache;
 
 /**
  * @author Roye
- * @date 2018/9/10
- * <p>
- * getcache，获取缓存，过期则请求网络
- * refresh，请求网络并刷新缓存，可配合getcache使用
- * getandrefresh，请求缓存，并请求网络，网络不一致则刷新UI
+ * @date 2018/9/14
  */
-public enum CacheStrategy {
-    getcache, refresh, getandrefresh;
+public class CacheStrategy {
 
-    @Override
-    public String toString() {
-        return super.name();
-    }
+    protected static final String HEADER_KEY = "cachestg";
+
+    protected static final String KEY_NETWORK = "network";
+    protected static final String KEY_CACHE = "cache";
+    protected static final String KEY_REFRESH = "refresh";
+    protected static final String KEY_CACHE_AND_REFRESH = "getandrefresh";
+    protected static final String KEY_ONLY_CACHE = "onlycache";
+    protected static final String KEY_CACHE_1_HOUR = "cache1hour";
+
+    public static final String NETWORK = HEADER_KEY + ":" + KEY_NETWORK;
+    public static final String CACHE = HEADER_KEY + ":" + KEY_CACHE;
+    public static final String REFRESH = HEADER_KEY + ":" + KEY_REFRESH;
+
+    /**
+     * # 此策略需要配合call和PriorityCacheResponseCallback类实现
+     */
+    public static final String CACHE_AND_REFRESH = HEADER_KEY + ":" + KEY_CACHE_AND_REFRESH;
+    public static final String ONLY_CACHE = HEADER_KEY + ":" + KEY_ONLY_CACHE;
+    public static final String CACHE_1_HOUR = HEADER_KEY + ":" + KEY_CACHE_1_HOUR;
 }

@@ -3,8 +3,7 @@ package com.wolf.lib.okhttpcool.cache;
 import android.text.TextUtils;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.HashMap;
+import java.util.WeakHashMap;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -15,6 +14,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Cache;
+import okhttp3.CacheControl;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -25,8 +25,6 @@ import okio.ByteString;
  * @date 2018/9/10
  */
 public class CacheStrategyUtil {
-
-    public static final String STRATEGY_KEY = "adrcache";
 
     public static void checkSame(okhttp3.Response resopnse1, okhttp3.Response resopnse2, Consumer<String> consumer) {
         Observable.just(resopnse1, resopnse2).flatMap(new Function<okhttp3.Response, ObservableSource<String>>() {
@@ -65,56 +63,85 @@ public class CacheStrategyUtil {
         return oRequest.newBuilder().header("Cache-Control", "no-cache").build();
     }
 
-    static WeakReference<HashMap<String, Integer>> weakReference;
+    public static Request getOnlyCacheRequest(Request oRequest) {
+        return oRequest.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=2419200").build();
+    }
+
+    public static Request get1HourCacheRequest(Request oRequest) {
+        return oRequest.newBuilder().header("Cache-Control", "max-age=3600").build();
+    }
+
+    public static Request getRefreshRequest(Request oRequest) {
+        return getNoCacheRequest(oRequest);
+    }
+
+    static WeakHashMap<String, Integer> cacheAndRefreshFlag = new WeakHashMap<>();
 
     public static Response doForCacheInterceptor(Interceptor.Chain chain, Request oRequest) throws IOException {
-        String adrcache = oRequest.header(CacheStrategyUtil.STRATEGY_KEY);
+        String adrcache = oRequest.header(CacheStrategy.HEADER_KEY);
 
         if (TextUtils.isEmpty(adrcache)) {
             return null;
         }
 
         Request request = oRequest;
-        if (adrcache.equals(CacheStrategy.getcache.name())) {
-            request = CacheStrategyUtil.getCacheRequest(oRequest);
-        } else if (adrcache.equals(CacheStrategy.refresh.name())) {
-            request = CacheStrategyUtil.getNoCacheRequest(oRequest);
-        } else if (adrcache.equals(CacheStrategy.getandrefresh.name())) {
-            if (weakReference == null || weakReference.get() == null) {
-                weakReference = new WeakReference<>(new HashMap<String, Integer>());
+        if (adrcache.equals(CacheStrategy.KEY_CACHE)) {
+
+            request = getCacheRequest(oRequest);
+
+        } else if (adrcache.equals(CacheStrategy.KEY_ONLY_CACHE)) {
+
+            request = getOnlyCacheRequest(oRequest);
+
+        } else if (adrcache.equals(CacheStrategy.KEY_CACHE_1_HOUR)) {
+
+            request = get1HourCacheRequest(oRequest);
+
+        } else if (adrcache.equals(CacheStrategy.KEY_REFRESH)) {
+
+            request = getRefreshRequest(oRequest);
+
+        } else if (adrcache.equals(CacheStrategy.KEY_NETWORK)) {
+
+            request = getNoCacheRequest(oRequest);
+
+        } else if (adrcache.equals(CacheStrategy.KEY_CACHE_AND_REFRESH)) {
+
+            String tmpKey = Cache.key(oRequest.url());
+            if (!cacheAndRefreshFlag.containsKey(tmpKey)) {//第一次
+                request = getCacheRequest(oRequest);
+                cacheAndRefreshFlag.put(tmpKey, 1);
+            } else {
+                request = getNoCacheRequest(oRequest);
+                cacheAndRefreshFlag.remove(tmpKey);
             }
 
-            HashMap<String, Integer> map = weakReference.get();
-            if (map == null) {
-                map = new HashMap<>();
-                weakReference = new WeakReference<>(map);
-            }
-            String tmpKey = Cache.key(oRequest.url());
-            if (!map.containsKey(tmpKey)) {//第一次
-                request = CacheStrategyUtil.getCacheRequest(oRequest);
-                map.put(tmpKey, 1);
-            } else {
-                request = CacheStrategyUtil.getNoCacheRequest(oRequest);
-                map.remove(tmpKey);
-            }
         }
         return chain.proceed(request);
     }
 
     public static Response doForNetworkInterceptor(Interceptor.Chain chain, Request oRequest) throws IOException {
-        String adrcache = oRequest.header(CacheStrategyUtil.STRATEGY_KEY);
+        String adrcache = oRequest.header(CacheStrategy.HEADER_KEY);
 
         if (TextUtils.isEmpty(adrcache)) {
             return null;
         }
 
-        Request request = oRequest.newBuilder().removeHeader(CacheStrategyUtil.STRATEGY_KEY).build();
+        CacheControl cacheControl = oRequest.cacheControl();
+
+        Request request = oRequest.newBuilder().removeHeader(CacheStrategy.HEADER_KEY).build();
         Response originalResponse = chain.proceed(request);
-        return originalResponse.newBuilder()
+        Response.Builder builder = originalResponse.newBuilder()
                 .removeHeader("Pragma")//清除响应体对Cache有影响的信息
-                .removeHeader("Cache-Control")//清除响应体对Cache有影响的信息
-                .header("Cache-Control", "max-age=86400") //秒
-                .build();
+                .removeHeader("Cache-Control");//清除响应体对Cache有影响的信息
+
+        if (cacheControl.maxAgeSeconds() > 0 || cacheControl.onlyIfCached()) {
+            builder.header("Cache-Control", cacheControl.toString());
+        } else {
+            builder.header("Cache-Control", "max-age=86400"); //秒
+        }
+
+        return builder.build();
     }
 
 }

@@ -36,7 +36,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
  * @author Roye
  * @date 2018/8/6
  */
-public class ZHttpClient {
+public class CoolHttpClient {
 
     private OkHttpClient client = null;
 
@@ -44,7 +44,7 @@ public class ZHttpClient {
 
     private OkHttpClient.Builder builder;
 
-    public ZHttpClient() {
+    public CoolHttpClient() {
         init();
     }
 

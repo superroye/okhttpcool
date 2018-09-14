@@ -50,11 +50,6 @@ public abstract class BaseResponseObserver<T> implements Observer<T>, SupportRes
         onStart();
     }
 
-    //默认不显示loading
-    public void needLoading(String loadingText) {
-        procedure.needLoading(loadingText);
-    }
-
     @Override
     public void onComplete() {
         if (disposable != null && !disposable.isDisposed()) {

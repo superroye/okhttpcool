@@ -35,17 +35,12 @@ public class NetworkInterceptor implements Interceptor {
             if (tryCacheResponse != null) {
                 return tryCacheResponse;
             } else {
-                if (cacheControl.noCache()) {
-                    //这里很关键，如果设置Response header也为no-CacheStrategyUtil, 就真的不缓存了，所以这里不做处理，默认会存缓存，等网络不可用时直接返回缓存
-                    return chain.proceed(request);
-                } else {
-                    Response originalResponse = chain.proceed(request);
-                    return originalResponse.newBuilder()
-                            .removeHeader("Pragma")//清除响应体对Cache有影响的信息
-                            .removeHeader("Cache-Control")//清除响应体对Cache有影响的信息
-                            .header("Cache-Control", cacheControl.toString())
-                            .build();
-                }
+                Response originalResponse = chain.proceed(request);
+                return originalResponse.newBuilder()
+                        .removeHeader("Pragma")//清除响应体对Cache有影响的信息
+                        .removeHeader("Cache-Control")//清除响应体对Cache有影响的信息
+                        .header("Cache-Control", cacheControl.toString())
+                        .build();
             }
         } else {
             //如果没有网络，不做处理，直接返回

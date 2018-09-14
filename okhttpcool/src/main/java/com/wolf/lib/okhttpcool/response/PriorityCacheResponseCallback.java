@@ -37,11 +37,6 @@ public abstract class PriorityCacheResponseCallback<T> implements Callback<T>, S
         procedure.showLoading();
     }
 
-    //默认不显示loading
-    public void needLoading(String loadingText) {
-        procedure.needLoading(loadingText);
-    }
-
     @Override
     public void onResponse(Call<T> call, final Response<T> response) {
         okhttp3.Response networkResopnse = response.raw().networkResponse();
