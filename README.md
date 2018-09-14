@@ -39,24 +39,32 @@
     
 ## 3、定义HttpApi
 
-    public interface ZZCAPi {
-        @Headers("Cache-Control:public, only-if-cached, max-stale=2419200")
-        @GET("sug?code=utf-8")
-        public Observable<TaobaoTest> testSearchOnlyCache(@Query("q") String keyword);
+    public interface CoolAPi {
 
-        @Headers("Cache-Control:no-cache")
-        @GET("sug?code=utf-8")
-        public Observable<TaobaoTest> testSearchNetwork(@Query("q") String keyword);
+      @Headers(CacheStrategy.ONLY_CACHE)
+      @GET("sug?code=utf-8")
+      public Observable<TaobaoTest> testSearchOnlyCache(@Query("q") String keyword);
 
-        @Headers("Cache-Control:max-age=640")
-        @GET("sug?code=utf-8")
-        public Observable<TaobaoTest> testSearchCacheAge(@Query("q") String keyword);
+      @Headers(CacheStrategy.NETWORK)
+      @GET("sug?code=utf-8")
+      public Observable<TaobaoTest> testSearchNetwork(@Query("q") String keyword);
 
-        @GET("sug?code=utf-8")
-        public Call<TaobaoTest> testSearchSceneCacheCall(@Query("q") String keyword, @Header(SceneCacheStrategy.STRATEGY_KEY) String                 cacheStrategy);
+      @Headers(CacheStrategy.CACHE_1_HOUR)
+      @GET("sug?code=utf-8")
+      public Observable<TaobaoTest> testSearchCacheAge(@Query("q") String keyword);
 
-        @GET("sug?code=utf-8")
-        public Observable<TaobaoTest> testSearchSceneCache(@Query("q") String keyword, @Header(SceneCacheStrategy.STRATEGY_KEY) String               cacheStrategy);
+      @Headers(CacheStrategy.CACHE_AND_REFRESH)
+      @GET("sug?code=utf-8")
+      public Call<TaobaoTest> testSearchSceneCacheCall(@Query("q") String keyword);
+
+      @Headers(CacheStrategy.CACHE)
+      @GET("sug?code=utf-8")
+      public Observable<TaobaoTest> testSearchSceneCache(@Query("q") String keyword);
+
+      @Headers(CacheStrategy.REFRESH)
+      @GET("sug?code=utf-8")
+      public Observable<TaobaoTest> testSearchSceneRefresh(@Query("q") String keyword);
+
     }
     
 ## 4、初始化retrofit和HttpApi
@@ -104,10 +112,9 @@
 
   以下是6种缓存策略的调用方式。
   
-  
     //只读缓存（无视过期时间）
     public void cacheOnly(View view) {
-        ZZService.api().testSearchOnlyCache("零食").subscribe(new ResponseObserver<TaobaoTest>() {
+        CoolService.api().testSearchOnlyCache("零食").subscribe(new ResponseObserver<TaobaoTest>() {
 
             @Override
             public void onResponse(TaobaoTest result) {
@@ -118,7 +125,7 @@
 
     //自定义缓存时间
     public void cacheAge(View view) {
-        ZZService.api().testSearchCacheAge("零食").subscribe(new ResponseObserver<TaobaoTest>() {
+        CoolService.api().testSearchCacheAge("零食").subscribe(new ResponseObserver<TaobaoTest>() {
             @Override
             public void onResponse(TaobaoTest result) {
                 Log.d("okhttp", "cacheAge ====== " + result.toString());
@@ -128,7 +135,7 @@
 
     //不缓存，读网络
     public void noCache(View view) {
-        ZZService.api().testSearchNetwork("零食").subscribe(new ResponseObserver<TaobaoTest>() {
+        CoolService.api().testSearchNetwork("零食").subscribe(new ResponseObserver<TaobaoTest>() {
             @Override
             public void onResponse(TaobaoTest result) {
                 Log.d("okhttp", "noCache ====== " + result.toString());
@@ -138,7 +145,7 @@
 
     //固定缓存1天
     public void cacheLong(View view) {
-        ZZService.api().testSearchSceneCache("零食", SceneCacheStrategy.Strategy.getcache.name()).subscribe(new ResponseObserver<TaobaoTest>() {
+        CoolService.api().testSearchSceneCache("零食").subscribe(new ResponseObserver<TaobaoTest>() {
             @Override
             public void onResponse(TaobaoTest result) {
                 Log.d("okhttp", "cacheLong ====== " + result.toString());
@@ -148,7 +155,7 @@
 
     //读网络，并存缓存
     public void refresh(View view) {
-        ZZService.api().testSearchSceneCache("零食", SceneCacheStrategy.Strategy.refresh.name()).subscribe(new ResponseObserver<TaobaoTest>() {
+        CoolService.api().testSearchSceneRefresh("零食").subscribe(new ResponseObserver<TaobaoTest>() {
             @Override
             public void onResponse(TaobaoTest result) {
                 Log.d("okhttp", "refresh ====== " + result.toString());
@@ -164,8 +171,8 @@
                 Log.d("okhttp", "cacheAndRefresh ====== " + result.toString());
             }
         };
-        ZZService.api()
-                .testSearchSceneCacheCall("零食", SceneCacheStrategy.Strategy.getandrefresh.name())
+        CoolService.api()
+                .testSearchSceneCacheCall("零食")
                 .enqueue(cb);
     }
     
