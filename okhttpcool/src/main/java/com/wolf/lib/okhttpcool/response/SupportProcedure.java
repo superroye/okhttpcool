@@ -21,7 +21,6 @@ public class SupportProcedure<T> {
 
     WeakReference<IProgressDialog> mProgressDialog;
     private String loadingText;
-    private boolean needLoading;
     private SupportResponseLifecycle responseLifecycle;
 
     public SupportProcedure() {
@@ -39,7 +38,6 @@ public class SupportProcedure<T> {
     public void setProgressDialog(IProgressDialog progressDialog, String loadingText) {
         if (progressDialog != null) {
             this.mProgressDialog = new WeakReference<>(progressDialog);
-            needLoading = true;
             this.loadingText = loadingText;
         }
     }
@@ -78,7 +76,7 @@ public class SupportProcedure<T> {
     }
 
     public void showLoading() {
-        if (needLoading && mProgressDialog != null) {
+        if (!TextUtils.isEmpty(loadingText) && mProgressDialog != null) {
             IProgressDialog progress = mProgressDialog.get();
             if (progress != null) {
                 progress.showLoading(loadingText);
@@ -87,20 +85,12 @@ public class SupportProcedure<T> {
     }
 
     public void hideLoading() {
-        if (needLoading && mProgressDialog != null) {
+        if (!TextUtils.isEmpty(loadingText) && mProgressDialog != null) {
             IProgressDialog progress = mProgressDialog.get();
             if (progress != null) {
                 progress.hideLoading();
             }
         }
-    }
-
-    //默认不显示loading
-    public void needLoading(String loadingText) {
-        if (!TextUtils.isEmpty(loadingText)) {
-            this.loadingText = loadingText;
-        }
-        needLoading = true;
     }
 
 }
