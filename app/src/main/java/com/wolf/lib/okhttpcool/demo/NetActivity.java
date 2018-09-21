@@ -6,8 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.wolf.lib.okhttpcool.cache.CacheStrategy;
-import com.wolf.lib.okhttpcool.cache.CacheStrategyUtil;
 import com.wolf.lib.okhttpcool.demo.bean.TaobaoTest;
 import com.wolf.lib.okhttpcool.response.PriorityCacheResponseCallback;
 import com.wolf.lib.okhttpcool.response.ResponseObserver;
@@ -23,7 +21,7 @@ public class NetActivity extends AppCompatActivity {
 
     //只读缓存（无视过期时间）
     public void cacheOnly(View view) {
-        ZZService.api().testSearchOnlyCache("零食").subscribe(new ResponseObserver<TaobaoTest>() {
+        CoolService.api().testSearchOnlyCache("零食").subscribe(new ResponseObserver<TaobaoTest>() {
 
             @Override
             public void onResponse(TaobaoTest result) {
@@ -34,7 +32,7 @@ public class NetActivity extends AppCompatActivity {
 
     //自定义缓存时间
     public void cacheAge(View view) {
-        ZZService.api().testSearchCacheAge("零食").subscribe(new ResponseObserver<TaobaoTest>() {
+        CoolService.api().testSearchCacheAge("零食").subscribe(new ResponseObserver<TaobaoTest>() {
             @Override
             public void onResponse(TaobaoTest result) {
                 Log.d("okhttp", "cacheAge ====== " + result.toString());
@@ -44,7 +42,7 @@ public class NetActivity extends AppCompatActivity {
 
     //不缓存，读网络
     public void noCache(View view) {
-        ZZService.api().testSearchNetwork("零食").subscribe(new ResponseObserver<TaobaoTest>() {
+        CoolService.api().testSearchNetwork("零食").subscribe(new ResponseObserver<TaobaoTest>() {
             @Override
             public void onResponse(TaobaoTest result) {
                 Log.d("okhttp", "noCache ====== " + result.toString());
@@ -54,7 +52,7 @@ public class NetActivity extends AppCompatActivity {
 
     //固定缓存1天
     public void cacheLong(View view) {
-        ZZService.api().testSearchSceneCache("零食", CacheStrategy.getcache.toString()).subscribe(new ResponseObserver<TaobaoTest>() {
+        CoolService.api().testSearchSceneCache("零食").subscribe(new ResponseObserver<TaobaoTest>() {
             @Override
             public void onResponse(TaobaoTest result) {
                 Log.d("okhttp", "cacheLong ====== " + result.toString());
@@ -64,7 +62,7 @@ public class NetActivity extends AppCompatActivity {
 
     //读网络，并存缓存
     public void refresh(View view) {
-        ZZService.api().testSearchSceneCache("零食", CacheStrategy.refresh.toString()).subscribe(new ResponseObserver<TaobaoTest>() {
+        CoolService.api().testSearchSceneRefresh("零食").subscribe(new ResponseObserver<TaobaoTest>() {
             @Override
             public void onResponse(TaobaoTest result) {
                 Log.d("okhttp", "refresh ====== " + result.toString());
@@ -80,8 +78,8 @@ public class NetActivity extends AppCompatActivity {
                 Log.d("okhttp", "cacheAndRefresh ====== " + result.toString());
             }
         };
-        ZZService.api()
-                .testSearchSceneCacheCall("零食", CacheStrategy.getandrefresh.toString())
+        CoolService.api()
+                .testSearchSceneCacheCall("零食")
                 .enqueue(cb);
     }
 }

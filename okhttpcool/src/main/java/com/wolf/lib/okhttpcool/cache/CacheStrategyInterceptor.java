@@ -25,7 +25,6 @@ public class CacheStrategyInterceptor implements Interceptor {
             oRequest = oRequest.newBuilder()
                     .cacheControl(CacheControl.FORCE_CACHE)
                     .build();
-
             Response originalResponse = chain.proceed(oRequest);
             return originalResponse.newBuilder()
                     .removeHeader("Pragma")

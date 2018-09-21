@@ -11,6 +11,7 @@ import com.wolf.lib.okhttpcool.util.ToastUtils;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
+import demo.net.lib.net.BuildConfig;
 import retrofit2.HttpException;
 
 /**
@@ -68,10 +69,28 @@ public class SupportProcedure<T> {
 
     public void handleResponse(HttpResponse<T> result) {
         if (result != null) {
-            if (result.code == 0 || result.code == 200)
+            if (result.code == 0)
                 responseLifecycle.onResponse(result.data);
             else
                 responseLifecycle.onFailed(result);
+        }else {
+            responseLifecycle.onFailed(null);
+        }
+    }
+
+    public void doFailed(HttpResponse<T> result) {
+        if(result==null){
+            responseLifecycle.onFailed(null);
+            return;
+        }
+
+        if (result.code == 1 || result.code == 1003) {
+            return;
+        }
+        if (result.msg != null) {
+            if (BuildConfig.DEBUG) {
+                ToastUtils.showToast(result.msg);
+            }
         }
     }
 

@@ -2,7 +2,7 @@ package com.wolf.lib.okhttpcool.response;
 
 import com.wolf.lib.okhttpcool.listener.IRxObserveDisposer;
 
-public abstract class ResponseObserver<T> extends BaseResponseObserver<T> {
+public abstract class ResponseObserver<T> extends BaseResponseObserver<T, T> {
 
     public ResponseObserver() {
         this(null);
@@ -13,7 +13,7 @@ public abstract class ResponseObserver<T> extends BaseResponseObserver<T> {
     }
 
     @Override
-    public void onNext(T result) {
-        onResponse(result);
+    public void onFailed(HttpResponse<T> result) {
+
     }
 }

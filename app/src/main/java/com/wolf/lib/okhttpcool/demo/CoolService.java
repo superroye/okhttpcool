@@ -1,33 +1,32 @@
 package com.wolf.lib.okhttpcool.demo;
 
 import com.wolf.lib.okhttpcool.ApiBuilder;
-import com.wolf.lib.okhttpcool.ZHttpClient;
+import com.wolf.lib.okhttpcool.CoolHttpClient;
 import com.wolf.lib.okhttpcool.support.GlobalRequestAdapter;
 
-import okhttp3.FormBody;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
 
-public class ZZService {
+public class CoolService {
 
-    private static ZZCAPi zzcaPi;
+    private static CoolAPi coolAPi;
 
-    public static ZZCAPi api() {
-        if (zzcaPi == null) {
-            synchronized (ZZService.class) {
-                if (zzcaPi == null) {
+    public static CoolAPi api() {
+        if (coolAPi == null) {
+            synchronized (CoolService.class) {
+                if (coolAPi == null) {
                     init();
                 }
             }
         }
-        return zzcaPi;
+        return coolAPi;
     }
 
     private static void init() {
-        ApiBuilder<ZZCAPi> apiBuilder = new ApiBuilder<ZZCAPi>() {
+        ApiBuilder<CoolAPi> apiBuilder = new ApiBuilder<CoolAPi>() {
 
             @Override
-            public void onBuild(ZHttpClient httpClient) {
+            public void onBuild(CoolHttpClient httpClient) {
                 httpClient.setGlobalRequestAdapter(new GlobalRequestAdapter() {
                     @Override
                     public void addHeader(Request.Builder builder) {
@@ -38,18 +37,14 @@ public class ZZService {
                     public void addQueryParams(HttpUrl.Builder builder) {
                         //builder.addEncodedQueryParameter("test","testName");
                     }
-
-                    @Override
-                    public void addPostParams(FormBody.Builder builder) {
-                        //builder.add("testPost", "testPostValue");
-                    }
                 });
+
 
                 //httpClient.builder().cookieJar();
             }
         };
         apiBuilder.baseUrl("https://suggest.taobao.com/");
 
-        zzcaPi = apiBuilder.build();
+        coolAPi = apiBuilder.build();
     }
 }

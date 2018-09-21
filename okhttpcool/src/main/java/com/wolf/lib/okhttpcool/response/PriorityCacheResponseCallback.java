@@ -76,11 +76,6 @@ public abstract class PriorityCacheResponseCallback<T> implements Callback<T>, S
     }
 
     @Override
-    public void onFailed(HttpResponse<T> result) {
-        //此处不调用
-    }
-
-    @Override
     public void onFailure(Call<T> call, Throwable t) {
         onError(t);
     }
@@ -88,5 +83,10 @@ public abstract class PriorityCacheResponseCallback<T> implements Callback<T>, S
     public void onError(Throwable e) {
         procedure.handle(e);
         onFinish();
+    }
+
+    @Override
+    public void onFailed(HttpResponse<T> result) {
+
     }
 }

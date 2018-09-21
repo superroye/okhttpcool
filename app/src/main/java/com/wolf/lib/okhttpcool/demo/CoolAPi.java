@@ -1,13 +1,11 @@
 package com.wolf.lib.okhttpcool.demo;
 
 import com.wolf.lib.okhttpcool.cache.CacheStrategy;
-import com.wolf.lib.okhttpcool.cache.CacheStrategyUtil;
 import com.wolf.lib.okhttpcool.demo.bean.TaobaoTest;
 
 import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.GET;
-import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.Query;
 
@@ -21,24 +19,30 @@ import retrofit2.http.Query;
  * @POST
  * @FormUrlEncoded
  */
-public interface ZZCAPi {
+public interface CoolAPi {
 
-    @Headers("Cache-Control:public, only-if-cached, max-stale=2419200")
+    @Headers(CacheStrategy.ONLY_CACHE)
     @GET("sug?code=utf-8")
     public Observable<TaobaoTest> testSearchOnlyCache(@Query("q") String keyword);
 
-    @Headers("Cache-Control:no-cache")
+    @Headers(CacheStrategy.NETWORK)
     @GET("sug?code=utf-8")
     public Observable<TaobaoTest> testSearchNetwork(@Query("q") String keyword);
 
-    @Headers("Cache-Control:max-age=640")
+    @Headers(CacheStrategy.CACHE_1_HOUR)
     @GET("sug?code=utf-8")
     public Observable<TaobaoTest> testSearchCacheAge(@Query("q") String keyword);
 
+    @Headers(CacheStrategy.CACHE_AND_REFRESH)
     @GET("sug?code=utf-8")
-    public Call<TaobaoTest> testSearchSceneCacheCall(@Query("q") String keyword, @Header(CacheStrategyUtil.STRATEGY_KEY) String cacheStrategy);
+    public Call<TaobaoTest> testSearchSceneCacheCall(@Query("q") String keyword);
 
+    @Headers(CacheStrategy.CACHE)
     @GET("sug?code=utf-8")
-    public Observable<TaobaoTest> testSearchSceneCache(@Query("q") String keyword, @Header(CacheStrategyUtil.STRATEGY_KEY) String cacheStrategy);
+    public Observable<TaobaoTest> testSearchSceneCache(@Query("q") String keyword);
+
+    @Headers(CacheStrategy.REFRESH)
+    @GET("sug?code=utf-8")
+    public Observable<TaobaoTest> testSearchSceneRefresh(@Query("q") String keyword);
 
 }

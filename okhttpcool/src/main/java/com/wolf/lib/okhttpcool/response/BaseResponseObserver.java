@@ -12,7 +12,7 @@ import io.reactivex.disposables.Disposable;
  * Created by Roye on 2016-12-7.
  */
 
-public abstract class BaseResponseObserver<T> implements Observer<T>, SupportResponseLifecycle<T> {
+public abstract class BaseResponseObserver<Result, Data> implements Observer<Result>, SupportResponseLifecycle<Data> {
 
     private Disposable disposable;
     public SupportProcedure procedure;
@@ -51,6 +51,17 @@ public abstract class BaseResponseObserver<T> implements Observer<T>, SupportRes
     }
 
     @Override
+    public void onNext(Result result) {
+        if (result == null) {
+            onResponse(null);
+        } else if (result instanceof HttpResponse) {
+            procedure.handleResponse((HttpResponse) result);
+        } else {
+            onResponse((Data) result);
+        }
+    }
+
+    @Override
     public void onComplete() {
         if (disposable != null && !disposable.isDisposed()) {
             disposable.dispose();
@@ -77,8 +88,4 @@ public abstract class BaseResponseObserver<T> implements Observer<T>, SupportRes
         procedure.showLoading();
     }
 
-    @Override
-    public void onFailed(HttpResponse<T> result) {
-
-    }
 }

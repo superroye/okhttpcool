@@ -6,7 +6,7 @@ import com.wolf.lib.okhttpcool.listener.IRxObserveDisposer;
  * Created by Roye on 2016/12/8.
  */
 
-public abstract class ResponseDataObserver<T> extends BaseResponseObserver<HttpResponse<T>> {
+public abstract class ResponseDataObserver<T> extends BaseResponseObserver<HttpResponse<T>, T> {
 
     public ResponseDataObserver() {
         this(null);
@@ -21,11 +21,8 @@ public abstract class ResponseDataObserver<T> extends BaseResponseObserver<HttpR
         super(observeDisposer);
     }
 
-
     @Override
-    public void onNext(HttpResponse<T> result) {
-        procedure.handleResponse(result);
+    public void onFailed(HttpResponse<T> result) {
+        procedure.doFailed(result);
     }
-
-
 }
