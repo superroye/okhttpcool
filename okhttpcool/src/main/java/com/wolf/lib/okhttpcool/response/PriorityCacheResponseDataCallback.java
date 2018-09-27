@@ -3,7 +3,6 @@ package com.wolf.lib.okhttpcool.response;
 import com.wolf.lib.okhttpcool.cache.CacheStrategyUtil;
 import com.wolf.lib.okhttpcool.listener.IProgressDialog;
 import com.wolf.lib.okhttpcool.util.NetworkUtils;
-import com.wolf.lib.okhttpcool.util.ToastUtils;
 
 import io.reactivex.functions.Consumer;
 import retrofit2.Call;
@@ -14,7 +13,7 @@ import retrofit2.Response;
  * @author Roye
  * @date 2018/9/6
  */
-public abstract class PriorityCacheResponseDataCallback<T> implements Callback<HttpResponse<T>>, SupportResponseLifecycle<T> {
+public abstract class PriorityCacheResponseDataCallback<Result extends IHttpResponse<Data>, Data> implements Callback<Result>, SupportResponseLifecycle<Result, Data> {
 
     private SupportProcedure procedure;
     private int requestCount;
@@ -39,7 +38,7 @@ public abstract class PriorityCacheResponseDataCallback<T> implements Callback<H
     }
 
     @Override
-    public void onResponse(Call<HttpResponse<T>> call, final Response<HttpResponse<T>> response) {
+    public void onResponse(Call<Result> call, final Response<Result> response) {
         okhttp3.Response networkResopnse = response.raw().networkResponse();
         if (networkResopnse != null) {
             if (lastCacheResopnse == null) {
@@ -77,17 +76,12 @@ public abstract class PriorityCacheResponseDataCallback<T> implements Callback<H
     }
 
     @Override
-    public void onFailed(HttpResponse<T> result) {
-        if (result.code == 1006) {
-            return;
-        }
-        if (result.msg != null) {
-            ToastUtils.showToast(result.msg);
-        }
+    public void onFailed(Result result) {
+        procedure.doFailed(result);
     }
 
     @Override
-    public void onFailure(Call<HttpResponse<T>> call, Throwable t) {
+    public void onFailure(Call<Result> call, Throwable t) {
         onError(t);
     }
 

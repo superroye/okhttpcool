@@ -13,7 +13,7 @@ public abstract class ResponseObserver<T> extends BaseResponseObserver<T, T> {
     }
 
     @Override
-    public void onFailed(HttpResponse<T> result) {
+    public void onFailed(T t) {
 
     }
 }

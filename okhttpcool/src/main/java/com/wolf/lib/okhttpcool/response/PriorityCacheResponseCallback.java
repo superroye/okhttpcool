@@ -13,7 +13,7 @@ import retrofit2.Response;
  * @author Roye
  * @date 2018/9/12
  */
-public abstract class PriorityCacheResponseCallback<T> implements Callback<T>, SupportResponseLifecycle<T> {
+public abstract class PriorityCacheResponseCallback<T> implements Callback<T>, SupportResponseLifecycle<T, T> {
 
     private SupportProcedure procedure;
     private int requestCount;
@@ -86,7 +86,7 @@ public abstract class PriorityCacheResponseCallback<T> implements Callback<T>, S
     }
 
     @Override
-    public void onFailed(HttpResponse<T> result) {
+    public void onFailed(T result) {
 
     }
 }

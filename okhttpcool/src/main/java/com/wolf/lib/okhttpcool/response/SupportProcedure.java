@@ -18,11 +18,11 @@ import retrofit2.HttpException;
  * @author Roye
  * @date 2018/9/11
  */
-public class SupportProcedure<T> {
+public class SupportProcedure<Result extends IHttpResponse, Data> {
 
     WeakReference<IProgressDialog> mProgressDialog;
     private String loadingText;
-    private SupportResponseLifecycle responseLifecycle;
+    private SupportResponseLifecycle<Result, Data> responseLifecycle;
 
     public SupportProcedure() {
 
@@ -67,29 +67,21 @@ public class SupportProcedure<T> {
         }
     }
 
-    public void handleResponse(HttpResponse<T> result) {
+    public void handleResponse(Result result) {
         if (result != null) {
-            if (result.code == 0)
-                responseLifecycle.onResponse(result.data);
+            if (result.isOk())
+                responseLifecycle.onResponse((Data) result.getData());
             else
                 responseLifecycle.onFailed(result);
-        }else {
+        } else {
             responseLifecycle.onFailed(null);
         }
     }
 
-    public void doFailed(HttpResponse<T> result) {
-        if(result==null){
-            responseLifecycle.onFailed(null);
-            return;
-        }
-
-        if (result.code == 1 || result.code == 1003) {
-            return;
-        }
-        if (result.msg != null) {
+    public void doFailed(Result result) {
+        if (result.getMsg() != null) {
             if (BuildConfig.DEBUG) {
-                ToastUtils.showToast(result.msg);
+                ToastUtils.showToast(result.getMsg());
             }
         }
     }
