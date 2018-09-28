@@ -4,8 +4,8 @@ package com.wolf.lib.okhttpcool.response;
  * Created by Roye on 2016/12/8.
  */
 
-public class HttpResponse<T> extends BaseResponse implements IHttpResponse {
-    public T data;
+public class HttpResponse<Data> extends BaseResponse implements IHttpResponse<Data> {
+    public Data data;
 
     @Override
     public boolean isOk() {
@@ -18,7 +18,7 @@ public class HttpResponse<T> extends BaseResponse implements IHttpResponse {
     }
 
     @Override
-    public T getData() {
+    public Data getData() {
         return data;
     }
 
