@@ -4,6 +4,7 @@ import com.wolf.lib.okhttpcool.cache.CacheStrategyUtil;
 import com.wolf.lib.okhttpcool.listener.IProgressDialog;
 import com.wolf.lib.okhttpcool.util.NetworkUtils;
 
+import demo.net.lib.net.BuildConfig;
 import io.reactivex.functions.Consumer;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -77,7 +78,12 @@ public abstract class PriorityCacheResponseDataCallback<Result extends IHttpResp
 
     @Override
     public void onFailed(Result result) {
-        procedure.doFailed(result);
+        DefaultResponseCodeHandle.handle(result);
+        if (result.getMsg() != null) {
+            if (BuildConfig.DEBUG) {
+                //ToastUtils.showToast(result.getMsg());
+            }
+        }
     }
 
     @Override

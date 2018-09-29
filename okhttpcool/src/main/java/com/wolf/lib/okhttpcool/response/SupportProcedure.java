@@ -78,14 +78,6 @@ public class SupportProcedure<Result extends IHttpResponse, Data> {
         }
     }
 
-    public void doFailed(Result result) {
-        if (result.getMsg() != null) {
-            if (BuildConfig.DEBUG) {
-                ToastUtils.showToast(result.getMsg());
-            }
-        }
-    }
-
     public void showLoading() {
         if (!TextUtils.isEmpty(loadingText) && mProgressDialog != null) {
             IProgressDialog progress = mProgressDialog.get();
