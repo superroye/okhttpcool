@@ -2,6 +2,8 @@ package com.wolf.lib.okhttpcool.cache;
 
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.util.WeakHashMap;
 
@@ -26,21 +28,23 @@ import okio.ByteString;
  */
 public class CacheStrategyUtil {
 
-    public static void checkSame(okhttp3.Response resopnse1, okhttp3.Response resopnse2, Consumer<String> consumer) {
-        Observable.just(resopnse1, resopnse2).flatMap(new Function<okhttp3.Response, ObservableSource<String>>() {
+    public static void checkSame(final Object resopnse1, Object resopnse2, Consumer<String> consumer) {
+        Observable.just(resopnse1, resopnse2).flatMap(new Function<Object, ObservableSource<String>>() {
             @Override
-            public ObservableSource<String> apply(final okhttp3.Response resopnse) throws Exception {
+            public ObservableSource<String> apply(final Object resopnse) throws Exception {
                 return Observable.create(new ObservableOnSubscribe<String>() {
                     @Override
                     public void subscribe(ObservableEmitter<String> e) throws Exception {
                         try {
-                            String md5 = ByteString.of(resopnse.body().bytes()).md5().hex();
+                            Gson gson = new Gson();
+                            String md5 = ByteString.encodeUtf8(gson.toJson(resopnse)).md5().hex();
                             e.onNext(String.valueOf(md5));
                         } catch (Exception ex) {
+                            e.onNext("");
                             ex.printStackTrace();
                         }
 
-                        e.onNext("");
+                        e.onComplete();
                     }
                 })
                         .subscribeOn(Schedulers.io())

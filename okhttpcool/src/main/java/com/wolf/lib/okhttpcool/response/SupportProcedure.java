@@ -69,10 +69,16 @@ public class SupportProcedure<Result extends IHttpResponse, Data> {
 
     public void handleResponse(Result result) {
         if (result != null) {
-            if (result.isOk())
-                responseLifecycle.onResponse((Data) result.getData());
-            else
+            if (result.isOk()) {
+                try {
+                    responseLifecycle.onResponse((Data) result.getData());
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    responseLifecycle.onFailed(null);
+                }
+            } else {
                 responseLifecycle.onFailed(result);
+            }
         } else {
             responseLifecycle.onFailed(null);
         }

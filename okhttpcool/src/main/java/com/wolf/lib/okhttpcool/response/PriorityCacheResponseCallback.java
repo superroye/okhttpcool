@@ -13,11 +13,11 @@ import retrofit2.Response;
  * @author Roye
  * @date 2018/9/12
  */
-public abstract class PriorityCacheResponseCallback<T> implements Callback<T>, SupportResponseLifecycle<T, T> {
+public abstract class PriorityCacheResponseCallback<Result> implements Callback<Result>, SupportResponseLifecycle<Result, Result> {
 
     private SupportProcedure procedure;
     private int requestCount;
-    private okhttp3.Response lastCacheResopnse;
+    private Result lastCacheResult;
 
     public PriorityCacheResponseCallback() {
         procedure = new SupportProcedure();
@@ -38,14 +38,14 @@ public abstract class PriorityCacheResponseCallback<T> implements Callback<T>, S
     }
 
     @Override
-    public void onResponse(Call<T> call, final Response<T> response) {
+    public void onResponse(Call<Result> call, final Response<Result> response) {
         okhttp3.Response networkResopnse = response.raw().networkResponse();
         if (networkResopnse != null) {
-            if (lastCacheResopnse == null) {
+            if (lastCacheResult == null) {
                 onResponse(response.body());
                 onFinish();
             } else {
-                CacheStrategyUtil.checkSame(lastCacheResopnse, networkResopnse, new Consumer<String>() {
+                CacheStrategyUtil.checkSame(lastCacheResult, response.body(), new Consumer<String>() {
                     @Override
                     public void accept(String s) throws Exception {
                         if ("n".equals(s)) {
@@ -56,8 +56,7 @@ public abstract class PriorityCacheResponseCallback<T> implements Callback<T>, S
                 });
             }
         } else {
-            lastCacheResopnse = response.raw().cacheResponse();
-
+            lastCacheResult = response.body();
             onResponse(response.body());
             onFinish();
 
@@ -76,7 +75,7 @@ public abstract class PriorityCacheResponseCallback<T> implements Callback<T>, S
     }
 
     @Override
-    public void onFailure(Call<T> call, Throwable t) {
+    public void onFailure(Call<Result> call, Throwable t) {
         onError(t);
     }
 
@@ -86,7 +85,7 @@ public abstract class PriorityCacheResponseCallback<T> implements Callback<T>, S
     }
 
     @Override
-    public void onFailed(T result) {
+    public void onFailed(Result result) {
 
     }
 }

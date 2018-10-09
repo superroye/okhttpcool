@@ -18,7 +18,7 @@ public abstract class PriorityCacheResponseDataCallback<Result extends IHttpResp
 
     private SupportProcedure procedure;
     private int requestCount;
-    private okhttp3.Response lastCacheResopnse;
+    private Result lastCacheResult;
 
     public PriorityCacheResponseDataCallback() {
         procedure = new SupportProcedure();
@@ -42,11 +42,11 @@ public abstract class PriorityCacheResponseDataCallback<Result extends IHttpResp
     public void onResponse(Call<Result> call, final Response<Result> response) {
         okhttp3.Response networkResopnse = response.raw().networkResponse();
         if (networkResopnse != null) {
-            if (lastCacheResopnse == null) {
+            if (lastCacheResult == null) {
                 procedure.handleResponse(response.body());
                 onFinish();
             } else {
-                CacheStrategyUtil.checkSame(lastCacheResopnse, networkResopnse, new Consumer<String>() {
+                CacheStrategyUtil.checkSame(lastCacheResult, response.body(), new Consumer<String>() {
                     @Override
                     public void accept(String s) throws Exception {
                         if ("n".equals(s)) {
@@ -57,7 +57,7 @@ public abstract class PriorityCacheResponseDataCallback<Result extends IHttpResp
                 });
             }
         } else {
-            lastCacheResopnse = response.raw().cacheResponse();
+            lastCacheResult = response.body();
 
             procedure.handleResponse(response.body());
             onFinish();
