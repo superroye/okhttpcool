@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sdk_net_request_tips">请求中...</string>
+    <string name="sdk_net_broken_tips">网络连接不上，请检查网络设置</string>
+    <string name="sdk_net_timeout_tips">网络超时</string>
+    <string name="sdk_net_link_error_tips">网络连接错误</string>
+    <string name="sdk_net_server_error_tips">连接服务器出错： %d, 请稍候重试</string>
+</resources>

@@ -1,6 +1,7 @@
 package com.wolf.lib.okhttpcool.demo;
 
-import com.wolf.lib.okhttpcool.response.IHttpResponse;
+import com.supylc.network.support.response.IHttpResponse;
+
 import java.io.Serializable;
 
 /**
@@ -11,11 +12,11 @@ public class ZHttpResponse<Data> implements IHttpResponse<Data>, Serializable {
 
     public String code;
     public String message;
-    public Data data;
+    public Data result;
 
     @Override
     public boolean isOk() {
-        return "0".equals(code) || "200".equals(code);
+        return true;
     }
 
     @Override
@@ -25,6 +26,6 @@ public class ZHttpResponse<Data> implements IHttpResponse<Data>, Serializable {
 
     @Override
     public Data getData() {
-        return data;
+        return result;
     }
 }

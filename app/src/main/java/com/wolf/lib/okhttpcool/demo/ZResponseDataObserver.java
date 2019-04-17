@@ -1,7 +1,7 @@
 package com.wolf.lib.okhttpcool.demo;
 
-import com.wolf.lib.okhttpcool.listener.IRxObserveDisposer;
-import com.wolf.lib.okhttpcool.response.BaseResponseObserver;
+import com.supylc.mobilearch.rxjava2.IRxObserveDisposer;
+import com.supylc.network.support.response.BaseResponseObserver;
 
 /**
  * @author Roye

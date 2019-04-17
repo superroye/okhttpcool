@@ -1,48 +1,37 @@
 package com.wolf.lib.okhttpcool.demo;
 
-import com.wolf.lib.okhttpcool.cache.CacheStrategy;
+import com.supylc.network.build.ApiGroup;
+import com.supylc.network.support.cache.CacheStrategy;
 import com.wolf.lib.okhttpcool.demo.bean.TaobaoTest;
 
+import java.util.List;
+
 import io.reactivex.Observable;
-import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.Query;
 
-/**
- * @Headers("Cache-Control: max-age=640000") 直接请求，有缓存且未过期返回缓存，否则读网络并写缓存
- * @Headers("Cache-Control:no-cache") 直接请求网络，不做缓存
- * @Headers("Cache-Control:no-store") 直接请求网络，不存临时缓存
- * @Headers("Cache-Control:public, only-if-cached, max-stale=2419200") 直接请求缓存
- * @GET("select/search.php")
- * @GET("book/{id}")
- * @POST
- * @FormUrlEncoded
- */
+@ApiGroup(group = "main")
 public interface CoolAPi {
 
     @Headers(CacheStrategy.ONLY_CACHE)
     @GET("sug?code=utf-8")
-    public Observable<TaobaoTest> testSearchOnlyCache(@Query("q") String keyword);
+    Observable<ZHttpResponse<List<List<String>>>> testSearchOnlyCache(@Query("q") String keyword);
 
     @Headers(CacheStrategy.NETWORK)
     @GET("sug?code=utf-8")
-    public Observable<TaobaoTest> testSearchNetwork(@Query("q") String keyword);
+    Observable<ZHttpResponse<List<List<String>>>> testSearchNetwork(@Query("q") String keyword);
 
     @Headers(CacheStrategy.CACHE_1_HOUR)
     @GET("sug?code=utf-8")
-    public Observable<TaobaoTest> testSearchCacheAge(@Query("q") String keyword);
+    Observable<ZHttpResponse<List<List<String>>>> testSearchCacheAge(@Query("q") String keyword);
 
     @Headers(CacheStrategy.CACHE_AND_REFRESH)
     @GET("sug?code=utf-8")
-    public Call<TaobaoTest> testSearchSceneCacheCall(@Query("q") String keyword);
+    Observable<ZHttpResponse<List<List<String>>>> testSearchSceneCacheCall(@Query("q") String keyword);
 
     @Headers(CacheStrategy.CACHE)
     @GET("sug?code=utf-8")
-    public Observable<TaobaoTest> testSearchSceneCache(@Query("q") String keyword);
-
-    @Headers(CacheStrategy.REFRESH)
-    @GET("sug?code=utf-8")
-    public Observable<TaobaoTest> testSearchSceneRefresh(@Query("q") String keyword);
+    Observable<ZHttpResponse<List<List<String>>>> testSearchSceneCache(@Query("q") String keyword);
 
 }

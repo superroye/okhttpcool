@@ -22,6 +22,36 @@ allprojects {
     }
 }
 
+// module全局配置, 在各个module中分别引用
+ext {
+    // 允许重复依赖
+    multiDexEnabled = true
+    //去除无用资源
+    shrinkResources = true
+    // 是否debug信息
+    debuggable = false
+    // 对齐
+    zipAlignEnabled = true
+
+    compileSdkVersion = 26
+    buildToolsVersion = "28.0.3"
+    minSdkVersion = 19
+    targetSdkVersion = 26 // 注意: 23及以上就是运行时权限, 要在代码中动态去提示用户申请有关权限
+    versionCode = 132
+    versionName = "5.3.21"
+
+    supportLibVersion = '26.1.0'
+    support_support_v4 = "com.android.support:support-v4:${supportLibVersion}"
+    support_appcompat_v7 = "com.android.support:appcompat-v7:${supportLibVersion}"
+    support_design = "com.android.support:design:${supportLibVersion}"
+    support_recyclerview = "com.android.support:recyclerview-v7:${supportLibVersion}"
+    support_cardview = "com.android.support:cardview-v7:${supportLibVersion}"
+    // https://developer.android.com/studio/write/annotations.html
+    support_annotations = "com.android.support:support-annotations:${supportLibVersion}"
+    support_constraint_layout = 'com.android.support.constraint:constraint-layout:1.0.2'
+    support_multidex = 'com.android.support:multidex:1.0.3'
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }

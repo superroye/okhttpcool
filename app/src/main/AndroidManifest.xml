@@ -3,7 +3,7 @@
     package="com.wolf.lib.okhttpcool.demo">
 
     <application
-        android:name="com.wolf.lib.okhttpcool.base.BaseApplication"
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

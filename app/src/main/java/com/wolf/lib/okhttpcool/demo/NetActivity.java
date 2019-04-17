@@ -6,11 +6,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.wolf.lib.okhttpcool.demo.bean.TaobaoTest;
-import com.wolf.lib.okhttpcool.response.PriorityCacheResponseCallback;
-import com.wolf.lib.okhttpcool.response.ResponseObserver;
+import com.supylc.mobilearch.rxjava2.IRxObserveDisposer;
+import com.supylc.network.ApiManager;
 
-public class NetActivity extends AppCompatActivity {
+import java.util.List;
+
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+
+public class NetActivity extends AppCompatActivity implements IRxObserveDisposer {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -21,20 +25,20 @@ public class NetActivity extends AppCompatActivity {
 
     //只读缓存（无视过期时间）
     public void cacheOnly(View view) {
-        CoolService.api().testSearchOnlyCache("零食").subscribe(new ResponseObserver<TaobaoTest>() {
+        ApiManager.api(CoolAPi.class).testSearchOnlyCache("零食").subscribe(new ZResponseDataObserver<List<List<String>>>(this) {
 
             @Override
-            public void onResponse(TaobaoTest result) {
-                Log.d("okhttp", "cacheOnly ====== " + result.toString());
+            public void onResponse(List<List<String>> result) {
+
             }
         });
     }
 
     //自定义缓存时间
     public void cacheAge(View view) {
-        CoolService.api().testSearchCacheAge("零食").subscribe(new ResponseObserver<TaobaoTest>() {
+        ApiManager.api(CoolAPi.class).testSearchCacheAge("零食").subscribe(new ZResponseDataObserver<List<List<String>>>(this) {
             @Override
-            public void onResponse(TaobaoTest result) {
+            public void onResponse(List<List<String>> result) {
                 Log.d("okhttp", "cacheAge ====== " + result.toString());
             }
         });
@@ -42,44 +46,44 @@ public class NetActivity extends AppCompatActivity {
 
     //不缓存，读网络
     public void noCache(View view) {
-        CoolService.api().testSearchNetwork("零食").subscribe(new ResponseObserver<TaobaoTest>() {
+        ApiManager.api(CoolAPi.class).testSearchNetwork("零食").subscribe(new ZResponseDataObserver<List<List<String>>>(this) {
             @Override
-            public void onResponse(TaobaoTest result) {
+            public void onResponse(List<List<String>> result) {
                 Log.d("okhttp", "noCache ====== " + result.toString());
             }
         });
     }
 
-    //固定缓存1天
+    //固定缓存
     public void cacheLong(View view) {
-        CoolService.api().testSearchSceneCache("零食").subscribe(new ResponseObserver<TaobaoTest>() {
+        ApiManager.api(CoolAPi.class).testSearchSceneCache("零食").subscribe(new ZResponseDataObserver<List<List<String>>>(this) {
             @Override
-            public void onResponse(TaobaoTest result) {
+            public void onResponse(List<List<String>> result) {
                 Log.d("okhttp", "cacheLong ====== " + result.toString());
-            }
-        });
-    }
-
-    //读网络，并存缓存
-    public void refresh(View view) {
-        CoolService.api().testSearchSceneRefresh("零食").subscribe(new ResponseObserver<TaobaoTest>() {
-            @Override
-            public void onResponse(TaobaoTest result) {
-                Log.d("okhttp", "refresh ====== " + result.toString());
             }
         });
     }
 
     //读缓存，同时请求网络，并写缓存
     public void cacheAndRefresh(View view) {
-        PriorityCacheResponseCallback cb = new PriorityCacheResponseCallback<TaobaoTest>() {
+        ApiManager.api(CoolAPi.class).testSearchSceneCacheCall("零食").subscribe(new ZResponseDataObserver<List<List<String>>>(this) {
             @Override
-            public void onResponse(TaobaoTest result) {
-                Log.d("okhttp", "cacheAndRefresh ====== " + result.toString());
+            public void onResponse(List<List<String>> result) {
+                Log.d("okhttp", "refresh ====== " + result.toString());
             }
-        };
-        CoolService.api()
-                .testSearchSceneCacheCall("零食")
-                .enqueue(cb);
+        });
+    }
+
+    CompositeDisposable compositeDisposable = new CompositeDisposable();
+
+    @Override
+    public void addDisposable(Disposable disposable) {
+        compositeDisposable.add(disposable);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        compositeDisposable.dispose();
     }
 }
