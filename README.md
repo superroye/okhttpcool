@@ -37,8 +37,8 @@
     
 ## 3、定义HttpApi
 
- @ApiGroup(group = "main")
- public interface CoolAPi {
+      @ApiGroup(group = "main")
+     public interface CoolAPi {
 
     @Headers(CacheStrategy.ONLY_CACHE)
     @GET("sug?code=utf-8")
@@ -60,7 +60,7 @@
     @GET("sug?code=utf-8")
     Observable<ZHttpResponse<List<List<String>>>> testSearchSceneCache(@Query("q") String keyword);
 
-}
+    }
     
 ## 4、初始化retrofit和HttpApi
 
@@ -91,13 +91,13 @@
 
 ## 5、调用接口
 
-  ApiManager.api(CoolAPi.class).testSearchSceneCache("零食").subscribe(new ZResponseDataObserver<List<List<String>>>(this) {
+      ApiManager.api(CoolAPi.class).testSearchSceneCache("零食").subscribe(new ZResponseDataObserver<List<List<String>>>(this) {
             @Override
             public void onResponse(List<List<String>> result) {
                 Log.d("okhttp", "cacheLong ====== " + result.toString());
             }
         });
   
-   //如果是多次调用请求，类似搜索模糊提示的场景，可以通过下面方式，只取最后的请求结果。类似的，还有keepFirst策略。
-   ApiManager.api(CoolAPi.class).testSearchOnlyCache("零食").compose(RxRequestUtils.keepLast());
+     //如果是多次调用请求，类似搜索模糊提示的场景，可以通过下面方式，只取最后的请求结果。类似的，还有keepFirst策略。
+     ApiManager.api(CoolAPi.class).testSearchOnlyCache("零食").compose(RxRequestUtils.keepLast());
     
