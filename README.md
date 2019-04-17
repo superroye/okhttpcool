@@ -37,8 +37,8 @@
     
 ## 3、定义HttpApi
 
-@ApiGroup(group = "main")
-public interface CoolAPi {
+ @ApiGroup(group = "main")
+ public interface CoolAPi {
 
     @Headers(CacheStrategy.ONLY_CACHE)
     @GET("sug?code=utf-8")
