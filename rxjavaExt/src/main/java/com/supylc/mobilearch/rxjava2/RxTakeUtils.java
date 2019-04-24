@@ -23,7 +23,8 @@ public class RxTakeUtils {
 
             @Override
             public ObservableSource apply(Observable upstream) {
-                final long subscribeOnTime = counter.getAndSet(System.currentTimeMillis());
+                final long subscribeOnTime = System.currentTimeMillis();
+                counter.set(subscribeOnTime);
                 return upstream.skipWhile(new Predicate() {
                     @Override
                     public boolean test(Object o) {

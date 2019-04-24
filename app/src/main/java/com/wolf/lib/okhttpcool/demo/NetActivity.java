@@ -8,6 +8,7 @@ import android.view.View;
 
 import com.supylc.mobilearch.rxjava2.IRxObserveDisposer;
 import com.supylc.network.ApiManager;
+import com.supylc.network.support.request.RxRequestUtils;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class NetActivity extends AppCompatActivity implements IRxObserveDisposer
 
     //只读缓存（无视过期时间）
     public void cacheOnly(View view) {
-        ApiManager.api(CoolAPi.class).testSearchOnlyCache("零食").subscribe(new ZResponseDataObserver<List<List<String>>>(this) {
+        ApiManager.api(CoolAPi.class).testSearchOnlyCache("零食").compose(RxRequestUtils.keepFirst()).subscribe(new ZResponseDataObserver<List<List<String>>>(this) {
 
             @Override
             public void onResponse(List<List<String>> result) {
